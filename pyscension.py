@@ -13,8 +13,14 @@ from random import shuffle
 # cardName: [runes generated, power generated, honour, cost]
 card_list = {"Apprentice":[1, 0, 0, 0], "Militia":[0,1,0,0]}
 
+def handInstructions():
+	"""tells the player what to do"""
+	print "To play a card, input the number next to the card."
+	print "Enter 'END' to end your turn"
+
 
 class player(object):
+	"""each individual player"""
 	def __init__(self, name):
 		self.name = name
 		self.deck = []
@@ -62,12 +68,39 @@ class player(object):
 			self.drawCard()
 		
 	def displayHand(self):
-		print "%s hand:\n %s" % (self.name, [(i, card) for i in range(5) for card in self.hand]) # this does not provide the output I desire
+		# print "%s hand:\n %s" % (self.name, [(i, card) for card in self.hand for i in range(5)]) # this does not provide the output I desire
+		print "%s's hand:" % self.name
+		for x in range(5):
+			print x,":", self.hand[x] 
+
+	def playHand(self):
+		handInstructions()
+		self.displayHand()
+		cardSel = ""
+		runes = 0
+		power = 0
+		while True:
+			print "runes: %s // power: %s" % (runes, power)
+			cardSel = raw_input(":")
+			if cardSel == "END":
+				"---Ending Turn---"
+				break
+			if int(cardSel) > len(self.hand):
+				print "That is beyond the cards you have. Try Again"
+				self.displayHand
+			else:
+				runes = card_list[self.hand[int(cardSel)]][0]
+				power = card_list[self.hand[int(cardSel)]][1]
+
+
+
+
+
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 x = player("Steve")
+x.playHand()
 
-# these two need to be connected as a player has a single deck and a single hand - player class?
-# scary new realms that may well require actual software enginerring prowess
 
 
 
