@@ -13,7 +13,24 @@ import csv
 
 # cardName: [runes generated, power generated, honour, cost]
 # this will be populated from the csv file
-card_list = {"Apprentice":[1, 0, 0, 0], "Militia":[0,1,0,0]}
+
+"""
+loading data from the csv file into program memory
+
+name: [cost, runes, power, honor]
+if it's a monster, the cost is the power required, else it is the runes to buy
+"""
+
+# should i just have a single card list to look up
+card_list = {}
+
+
+with open('CotG.csv', 'rb') as f:
+    reader = csv.reader(f)
+    for row in reader:
+    	if row[0] != 'skip':
+    		card_list[row[1]] = [row[2], row[3],row[4],row[5]]
+
 
 # need a print value for cards to make information clearer [Apprentice // 1 Rune // 0 Honour] [ MONSTER: Name // x Power // y Honour // z Special Effects]
 
@@ -24,19 +41,39 @@ def handInstructions():
 
 class deck(object):
 	"""This is a base used for player decks and the game 'deck'"""
-	# game hand = board, discard = banish (used by players also), power = remaining resources etc.
 	def __init__(self, name):
 		self.name = name
 		self.deck = []
 		self.hand = []
+		self.constants = []
 		self.discard = []
+		self.honor = 0
 
+	def drawCard(self):
+		# do i need to account for the incredibly unlikely event of discard and deck having no cards in them?
+		if len(self.deck) == 0:
+			self.deck = list(self.discard)
+			self.discard = []
+			shuffle(self.deck)
+		self.discard.append(self.deck[0])
+		self.hand.append(self.deck.pop()) # assume this pops the 0'th indexed item by default but havet to check
+
+class board(object):
+	"""board state
+	game hand = board, discard = banish (used by players also), power = remaining resources etc."""
+	def __init__(self):
+		super(player, self).__init__(name)
+		self.newDeck()
+
+	def newDeck(self):
+		for key in board_cards:
+			self.deck.append(key)
+		shuffle(self.deck)
 
 class player(deck):
 	"""each individual player"""
 	def __init__(self, name):
 		super(player, self).__init__(name)
-		self.honour = 0
 		self.newDeck() # should these be moved to their own method with the parent class now taking precedence?
 		self.newHand()
 
@@ -51,15 +88,6 @@ class player(deck):
 			self.deck.append("Militia")
 		shuffle(self.deck)
 		self.discard = []
-
-	def drawCard(self):
-		# do i need to account for the incredibly unlikely event of discard and deck having no cards in them?
-		if len(self.deck) == 0:
-			self.deck = list(self.discard)
-			self.discard = []
-			shuffle(self.deck)
-		self.discard.append(self.deck[0])
-		self.hand.append(self.deck.pop()) # assume this pops the 0'th indexed item by default but havet to check
 
 	def newHand(self):
 		#this could be simplified to discard hand // new hand to have a single unified parent method that just draws to five - would work for the game state and the player
@@ -100,8 +128,8 @@ class player(deck):
 					print "~" * 10
 					print "Invalid Entry. Try Again"
 				else:
-					addRunes = card_list[self.hand[cardIndex]][0] 
-					addPower = card_list[self.hand[cardIndex]][1]
+					addRunes = int(card_list[self.hand[cardIndex]][1])
+					addPower = int(card_list[self.hand[cardIndex]][2])
 					print "~" * 10
 					print "Played %s gaining %s runes and %s power." % (self.hand[cardIndex], addRunes, addPower)
 					self.discard.append(self.hand.pop(cardIndex))
@@ -113,7 +141,6 @@ class player(deck):
 		print "---Ending Turn---"
 
 
-
 # could simplify the game by rather than having to play cards simply calculates the current resources of the player
 # guess it depends on what you see as part of the game - is the agility part of it or is it the decisions
 # also card draw, constructs etc
@@ -122,29 +149,10 @@ class player(deck):
 
 x = player("Steve")
 
-print x.deck
+#print x.deck
 #x.newDeck()
 #x.newHand()
 x.playHand()
 
-"""class board(object):
-	def __init__(self):
-		self.deck = []
-		self.constants = {}
-		self.board = {}
-
-
-class monsterDeck(object):
-	""Monster / Central deck"
-	def __init__(self):
-		self.deck = []
-		self.discard = []
-
-
-with open('CotG.csv', 'rb') as f:
-    reader = csv.reader(f)
-    for row in reader:
-        print row[1]
 
 # probably best to front load this information into memory when first run
-"""
