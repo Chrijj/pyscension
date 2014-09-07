@@ -1,0 +1,54 @@
+skip,Name,Cost,Runes,Power,Honor,Qty,Faction,Type,Set,Text
+player,Apprentice,0,1,0,0,0,,,CotG,(+1 Rune).
+constant,Cultist,2,0,0,1,0,Monster,,CotG,Reward: Gain (1 Honor)
+constant,Heavy Infantry,2,0,2,1,0,,,CotG,(+2 Power).
+player,Militia,0,0,1,0,0,,,CotG,(+1 Power).
+constant,Mystic,3,2,0,1,0,,,CotG,(+2 Rune).
+board,Arbiter of the Precipice,4,,,1,2,Void,Hero,CotG,Draw two cards. Banish a card in your hand.
+board,Arha Initiate,1,,,1,3,Enlightened,Hero,CotG,Draw a card.
+board,Arha Templar,4,,,3,2,Enlightened,Hero,CotG,Defeat a Monster that has (4 power) or less without paying its cost.
+board,Ascetic of the Lidless Eye,5,,,2,2,Enlightened,Hero,CotG,Draw two cards.
+board,Avatar Golem,4,,,2,2,Mechana,Hero,CotG,"Gain (2 Power). Gain (1 Honor) for each faction among Constructs you control. (Factions are Enlightened, Mechana, Lifebound, and Void.)"
+board,Avatar of the Fallen,7,,,4,1,Monster,,CotG,Unbanishable. Reward: Gain (4 Honor). You may acquire or defeat any card in the center row without paying its cost.
+board,Burrower Mark II,3,,,3,2,Mechana,Construct,CotG,"Once per turn, when you put a Mechana Construct into play (including this one), draw a card."
+board,"Cetra, Weaver of Stars",7,,,4,1,Lifebound,Hero,CotG,Acquire a Hero without paying  its cost. Place it on top of your deck.
+board,Corrosive Widow,4,,,3,4,Monster,,CotG,Reward: Gain (3 Honor). Each opponent must destroy a Construct he controls.
+board,Demon Slayer,4,,,2,2,Void,Hero,CotG,Gain (3 Power).
+board,Druids of the Stone Circle,4,,,3,2,Lifebound,Hero,CotG,Acquire a Hero with cost (3 Rune) or less without paying its cost. Place it on top of your deck.
+board,Earth Tyrant,6,,,5,2,Monster,,CotG,Reward: Gain (5 Honor). Draw two cards.
+board,"Emri, One with the Void",6,,,3,1,Void,Hero,CotG,Gain (4 Power).
+board,Flytrap Witch,5,,,2,2,Lifebound,Hero,CotG,Gain (2 Honor). Draw a card.
+board,Hedron Cannon,8,,,8,1,Mechana,Construct,CotG,"Once per turn, gain (1 Power) for each Mechana Construct you control."
+board,Hedron Link Device,7,,,7,1,Mechana,Construct,CotG,You may treat all Constructs as Mechana Constructs.
+board,"Kor, the Ferromancer",3,,,2,1,Mechana,Hero,CotG,Gain (2 Power). Draw a card if you control 2 or more Constructs.
+board,Landtalker,6,,,3,1,Lifebound,Hero,CotG,Gain (3 Rune).
+board,Lifebound Initiate,1,,,1,3,Lifebound,Hero,CotG,Gain (1 Rune) and (1 Honor).
+board,Master Dhartha,7,,,3,1,Enlightened,Hero,CotG,Draw three cards.
+board,Mechana Initiate,1,,,1,3,Mechana,Hero,CotG,Gain (1 Rune) or (1 Power).
+board,Mephit,3,,,2,3,Monster,,CotG,Reward: Gain (2 Honor). You may banish a card in the center row.
+board,Mistake of Creation,4,,,4,4,Monster,,CotG,Reward: Gain (4 Honor). You may banish a card in the center row andor a card in your discard pile.
+board,Muramasa,7,,,4,1,Void,Construct,CotG,"Once per turn, Gain (3 Power)."
+board,Oziah the Peerless,6,,,3,1,Enlightened,Hero,CotG,Defeat a Monster that has (6 power) or less without paying its cost.
+board,Reactor Monk,4,,,2,2,Mechana,Hero,CotG,Gain (2 Rune). You pay (1 Rune) less the next time you acquire a Construct this turn.
+board,Rocket Courier X-99,4,,,4,2,Mechana,Construct,CotG,"Once per turn, when you acquire another Mechana Construct, you may put it directly into play."
+board,Runic Lycanthrope,3,,,1,2,Lifebound,Hero,CotG,"Gain (2 Rune). If you have played another Lifebound Hero this turn, gain (2 Power)."
+board,Samael's Trickster,3,,,1,4,Monster,,CotG,Reward: Gain (1 Honor) and (1 Rune).
+board,Sea Tyrant,5,,,5,3,Monster,,CotG,"Reward: Gain (5 Honor). If an opponent has more than one Construct, that player must destroy all but one Construct he controls."
+board,Seer of the Forked Path,2,,,1,3,Enlightened,Hero,CotG,Draw a card. You may banish a card in the center row.
+board,Shade of the Black Watch,3,,,1,3,Void,Hero,CotG,Gain (2 Power). You may banish a card in your hand or discard pile.
+board,Shadow Star,3,,,2,2,Void,Construct,CotG,"Once per turn, gain (1 Power)."
+board,Snapdragon,5,,,2,2,Lifebound,Construct,CotG,"Once per turn, gain (1 Rune). The First time you play a Lifebound Hero each turn, gain (1 Honor)."
+board,Spike Vixen,2,,,1,2,Void,Hero,CotG,Gain (1 Power). Draw a card.
+board,Tablet of Time's Dawn,5,,,2,1,Enlightened,Construct,CotG,You may banish this Construct to take an additional turn after this one.
+board,Temple Librarian,2,,,1,3,Enlightened,Hero,CotG,"Discard a card. If you do, draw two cards."
+board,The All-Seeing Eye,6,,,2,1,Enlightened,Construct,CotG,"Once per turn, you may draw a card."
+board,The Grand Design,6,,,6,2,Mechana,Construct,CotG,"Once per turn, gain (2 Rune). You may spend it only to acquire Mechana Constructs."
+board,Tormented Soul,3,,,1,3,Monster,,CotG,Reward: Gain (1 Honor). Draw a card.
+board,Twofold Askara,4,,,2,1,Enlightened,Hero,CotG,Copy the effect of a Hero played this turn.
+board,Void Initiate,1,,,1,3,Void,Hero,CotG,Gain (1 Rune). You may banish a card in your hand or discard pile.
+board,Voidthirster,5,,,3,2,Void,Construct,CotG,"Once per turn, gain (1 Rune). The first time you defeat a Monster in the center row each turn, gain (1 Honor)."
+board,Watchmaker's Altar,5,,,5,2,Mechana,Construct,CotG,"Once per turn, gain (1 Rune). You may spend it only to acquire Mechana Constructs."
+board,Wind Tyrant,5,,,3,3,Monster,,CotG,Reward: Gain (3 honor) and (3 Rune).
+board,Wolf Shaman,3,,,1,3,Lifebound,Hero,CotG,Gain (1 Rune). Draw a card.
+board,"Xeron, Duke of Lies",6,,,3,1,Monster,,CotG,Reward: Gain (3 Honor). Take a card at random from each opponent's hand and add that card to your hand.
+board,Yggdrasil Staff,4,,,2,2,Lifebound,Construct,CotG,"Once per turn, gain (1 Power). Once per turn, you may spend (4 Rune) to gain (3 Honor)."

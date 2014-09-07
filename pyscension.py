@@ -21,13 +21,19 @@ name: [cost, runes, power, honor]
 if it's a monster, the cost is the power required, else it is the runes to buy
 """
 
-# should i just have a single card list to look up
+# should i just have a single card list to look up, still need to generate the decks though
 card_list = {}
+board_cards = []
+board_constants = []
 
-
+# this generation could be made clearer by first assigning the rows to variables ie name = row[0], x.append(name)
 with open('CotG.csv', 'rb') as f:
     reader = csv.reader(f)
     for row in reader:
+    	if row[0] == 'board':
+    		board_cards.append(row[1])
+    	elif row[0] == 'constant':
+    		board_constants.append(row[1])
     	if row[0] != 'skip':
     		card_list[row[1]] = [row[2], row[3],row[4],row[5]]
 
@@ -56,19 +62,23 @@ class deck(object):
 			self.discard = []
 			shuffle(self.deck)
 		self.discard.append(self.deck[0])
-		self.hand.append(self.deck.pop()) # assume this pops the 0'th indexed item by default but havet to check
+		self.hand.append(self.deck.pop()) # assume this pops the 0'th indexed item by default but have to check
 
-class board(object):
+class board(deck):
 	"""board state
 	game hand = board, discard = banish (used by players also), power = remaining resources etc."""
 	def __init__(self):
-		super(player, self).__init__(name)
+		super(deck, self).__init__()
 		self.newDeck()
 
-	def newDeck(self):
+	def newDeck(self): # these should be called "new game"
+		self.deck = []
+		self.constants = [] # should move this all to a separate function to reset it all
 		for key in board_cards:
 			self.deck.append(key)
 		shuffle(self.deck)
+		for card in board_constants:
+			self.constants.append(card)
 
 class player(deck):
 	"""each individual player"""
@@ -148,7 +158,7 @@ class player(deck):
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 x = player("Steve")
-
+z = board()
 #print x.deck
 #x.newDeck()
 #x.newHand()
