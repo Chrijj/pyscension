@@ -1,6 +1,5 @@
 # need to do cards
 # cardname : cost : type : resource generated : special tag
-# types: monster / construct / weapon / hero
 # potential issue - having zero cards in deck via banishing - trying to draw a new card etc
 
 from random import shuffle
@@ -31,14 +30,42 @@ with open('CotG.csv', 'rb') as f:
     reader = csv.reader(f)
     for row in reader:
     	if row[0] == 'board':
-    		board_cards.append(row[1])
+    		for i in range(int(row[8])): # take account of the quantities
+    			board_cards.append(row[1])
     	elif row[0] == 'constant':
     		board_constants.append(row[1])
     	if row[0] != 'skip':
-    		card_list[row[1]] = [row[2], row[3],row[4],row[5]]
+    		card_list[row[1]] = [row[2], row[3],row[4],row[5],row[6],row[7]] # [row[x] for x in range(1, 7)] ?
 
+# at the moment it is: name: [ cost, runes, power, honor, qty, faction, type]
 
 # need a print value for cards to make information clearer [Apprentice // 1 Rune // 0 Honour] [ MONSTER: Name // x Power // y Honour // z Special Effects]
+# also need to identify the board cards - monster / construct / hero
+def displayCard(cardName):
+	"""takes in card details and outputs a single
+	line summary of it
+	IF MONSTER - power and honor come last, cost needs to be somewhere for board"""
+	#if card_list[cardName][-1].upper() == "MONSTER":
+	# need displays for monsters on the board and heros / constracts showing the buy cost
+
+	if int(card_list[cardName][1]) > 0:
+		runes = card_list[cardName][1] + "R"
+	else:
+		runes = ""
+
+	if int(card_list[cardName][2]) > 0:
+		power = " / " if len(runes) > 0 else "" + card_list[cardName][2] + "P"
+	else:
+		power = ""
+
+	honor = " // " + card_list[cardName][3] + "h"
+
+	strReturn = "[%s: %s%s%s]" % (cardName, runes, power, honor)
+
+	return strReturn
+
+
+
 
 def handInstructions():
 	"""tells the player what to do"""
@@ -61,24 +88,37 @@ class deck(object):
 			self.deck = list(self.discard)
 			self.discard = []
 			shuffle(self.deck)
-		self.discard.append(self.deck[0])
 		self.hand.append(self.deck.pop()) # assume this pops the 0'th indexed item by default but have to check
 
 class board(deck):
 	"""board state
 	game hand = board, discard = banish (used by players also), power = remaining resources etc."""
-	def __init__(self):
-		super(deck, self).__init__()
+	def __init__(self, name):
+		super(board, self).__init__(name)
 		self.newDeck()
+		self.newHand()	
 
 	def newDeck(self): # these should be called "new game"
 		self.deck = []
-		self.constants = [] # should move this all to a separate function to reset it all
+		self.constants = [] # should move this all to a separate function to reset it all, just call init again with the name?
 		for key in board_cards:
 			self.deck.append(key)
 		shuffle(self.deck)
 		for card in board_constants:
 			self.constants.append(card)
+
+	def newHand(self):
+		for i in range(6):	# any value to a global variable for cards in hand?
+			self.drawCard()
+
+	def displayBoard(self):
+		print "=" * 10
+		print "Constants: \n %s // %s // %s" % (displayCard("Cultist"), displayCard("Mystic"), displayCard("Heavy Infantry"))
+		#print "Constants: \n [MONSTER: Cultist - 2P - 1h]  // [Mystic - 2R - 1h] // [Heavy Infantry - 2P - 1h]"
+		print "Board:"
+		for i in range(6):
+			print "\t", card_list[self.hand[i]][-1].upper(), ":", self.hand[i]
+		print "-" * 10
 
 class player(deck):
 	"""each individual player"""
@@ -158,11 +198,13 @@ class player(deck):
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 x = player("Steve")
-z = board()
+z = board("GAME BOARD") # here for testing but should probably move name to be a player specific attribute
+z.displayBoard()
 #print x.deck
 #x.newDeck()
 #x.newHand()
-x.playHand()
+#x.playHand()
+print displayCard("Apprentice")
+print displayCard("Heavy Infantry")
 
 
-# probably best to front load this information into memory when first run
