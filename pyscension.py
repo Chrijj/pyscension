@@ -35,19 +35,19 @@ with open('CotG.csv', 'rb') as f:
     	elif row[0] == 'constant':
     		board_constants.append(row[1])
     	if row[0] != 'skip':
-    		card_list[row[1]] = [row[2], row[3],row[4],row[5],row[6],row[7]] # [row[x] for x in range(1, 7)] ?
+    		card_list[row[1]] = [row[2], row[3], row[4], row[5], row[6], row[7]] # [row[x] for x in range(1, 7)] ?
 
-# at the moment it is: name: [ cost, runes, power, honor, qty, faction, type]
+# at the moment it is: name: [ 0,cost, 1,runes, 2,power, 3,honor, 4,faction, 5,type] need a space for special details
 
 # need a print value for cards to make information clearer [Apprentice // 1 Rune // 0 Honour] [ MONSTER: Name // x Power // y Honour // z Special Effects]
 # also need to identify the board cards - monster / construct / hero
-def displayCard(cardName):
+def displayCard(cardName, board = False):
 	"""takes in card details and outputs a single
 	line summary of it
 	IF MONSTER - power and honor come last, cost needs to be somewhere for board"""
 	#if card_list[cardName][-1].upper() == "MONSTER":
 	# need displays for monsters on the board and heros / constracts showing the buy cost
-
+	#if cardName in board_cards:
 	if int(card_list[cardName][1]) > 0:
 		runes = card_list[cardName][1] + "R"
 	else:
@@ -58,13 +58,25 @@ def displayCard(cardName):
 	else:
 		power = ""
 
-	honor = " // " + card_list[cardName][3] + "h"
+	if int(card_list[cardName][3]) > 0:
+		honor = " // " if not board else "" + card_list[cardName][3] + "h" # will need adjusting when stats are added in
+	else:
+		honor = ""
 
-	strReturn = "[%s: %s%s%s]" % (cardName, runes, power, honor)
+	if board:
+		cost = card_list[cardName][0]
+		strType = card_list[cardName][5].upper() + " " * (9 - len(card_list[cardName][5]))
+
+		if card_list[cardName][5].upper() == 'MONSTER':
+			cost += " Power"
+		else:
+			cost += " Runes"
+
+		strReturn = "%s: [%s: %s%s%s] %s " % (strType, cost, runes, power, honor, cardName)
+	else:
+		strReturn = "[%s: %s%s%s]" % (cardName, runes, power, honor)
 
 	return strReturn
-
-
 
 
 def handInstructions():
@@ -117,7 +129,8 @@ class board(deck):
 		#print "Constants: \n [MONSTER: Cultist - 2P - 1h]  // [Mystic - 2R - 1h] // [Heavy Infantry - 2P - 1h]"
 		print "Board:"
 		for i in range(6):
-			print "\t", card_list[self.hand[i]][-1].upper(), ":", self.hand[i]
+			print "\t" + displayCard(self.hand[i], True)
+			#print "\t", card_list[self.hand[i]][5].upper(), ":", self.hand[i]
 		print "-" * 10
 
 class player(deck):
@@ -206,5 +219,9 @@ z.displayBoard()
 #x.playHand()
 print displayCard("Apprentice")
 print displayCard("Heavy Infantry")
-
+#print displayCard(z.hand[0])
+#print board_cards
+#print 'Wind Tyrant' in board_cards
+print displayCard('Wind Tyrant')
+print displayCard('Wind Tyrant', True)
 
