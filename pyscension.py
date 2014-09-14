@@ -59,7 +59,8 @@ def displayCard(cardName, board = False):
 		power = ""
 
 	if int(card_list[cardName][3]) > 0:
-		honor = " // " if not board else "" + card_list[cardName][3] + "h" # will need adjusting when stats are added in
+		honor = " // " if not board else ""
+		honor += card_list[cardName][3] + "h" # will need adjusting when stats are added in
 	else:
 		honor = ""
 
@@ -68,11 +69,11 @@ def displayCard(cardName, board = False):
 		strType = card_list[cardName][5].upper() + " " * (9 - len(card_list[cardName][5]))
 
 		if card_list[cardName][5].upper() == 'MONSTER':
-			cost += " Power"
+			cost += " POWER"
 		else:
-			cost += " Runes"
+			cost += " R    "
 
-		strReturn = "%s: [%s: %s%s%s] %s " % (strType, cost, runes, power, honor, cardName)
+		strReturn = "%s: %s [%s%s%s] %s " % (strType, cost, runes, power, honor, displayCard(cardName))
 	else:
 		strReturn = "[%s: %s%s%s]" % (cardName, runes, power, honor)
 
@@ -207,21 +208,3 @@ class player(deck):
 # could simplify the game by rather than having to play cards simply calculates the current resources of the player
 # guess it depends on what you see as part of the game - is the agility part of it or is it the decisions
 # also card draw, constructs etc
-
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-x = player("Steve")
-z = board("GAME BOARD") # here for testing but should probably move name to be a player specific attribute
-z.displayBoard()
-#print x.deck
-#x.newDeck()
-#x.newHand()
-#x.playHand()
-print displayCard("Apprentice")
-print displayCard("Heavy Infantry")
-#print displayCard(z.hand[0])
-#print board_cards
-#print 'Wind Tyrant' in board_cards
-print displayCard('Wind Tyrant')
-print displayCard('Wind Tyrant', True)
-
