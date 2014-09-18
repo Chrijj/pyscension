@@ -10,37 +10,12 @@ import csv
 # append adds the item to the end
 # hence the issue that was being caused by hands full of letters
 
-# cardName: [runes generated, power generated, honour, cost]
-# this will be populated from the csv file
-
-"""
-loading data from the csv file into program memory
-
-name: [cost, runes, power, honor]
-if it's a monster, the cost is the power required, else it is the runes to buy
-"""
-
-# should i just have a single card list to look up, still need to generate the decks though
 card_list = {}
 board_cards = []
 board_constants = []
 
-# this generation could be made clearer by first assigning the rows to variables ie name = row[0], x.append(name)
-with open('CotG.csv', 'rb') as f:
-    reader = csv.reader(f)
-    for row in reader:
-    	if row[0] == 'board':
-    		for i in range(int(row[8])): # take account of the quantities
-    			board_cards.append(row[1])
-    	elif row[0] == 'constant':
-    		board_constants.append(row[1])
-    	if row[0] != 'skip':
-    		card_list[row[1]] = [row[2], row[3], row[4], row[5], row[6], row[7]] # [row[x] for x in range(1, 7)] ?
+cardName = []
 
-# at the moment it is: name: [ 0,cost, 1,runes, 2,power, 3,honor, 4,faction, 5,type] need a space for special details
-
-# need a print value for cards to make information clearer [Apprentice // 1 Rune // 0 Honour] [ MONSTER: Name // x Power // y Honour // z Special Effects]
-# also need to identify the board cards - monster / construct / hero
 def displayCard(cardName, board = False):
 	"""takes in card details and outputs a single
 	line summary of it
@@ -78,6 +53,51 @@ def displayCard(cardName, board = False):
 		strReturn = "[%s: %s%s%s]" % (cardName, runes, power, honor)
 
 	return strReturn
+
+class gameCard(object):
+	"""game cards"""
+	def __init__(self, name, cost, runes, power, honor, faction, ctype):
+		self.name = name
+		self.cost = cost
+		self.runes = runes
+		self.power = power
+		self.honor = honor
+		self.faction = faction
+		self.type = ctype
+
+	def display(self, board = False):
+		# relpace this with a refactored version, but for now...
+		displayCard(self.name, board)
+
+# this generation could be made clearer by first assigning the rows to variables ie name = row[0], x.append(name)
+# each card should really be an instance of a card class
+with open('CotG.csv', 'rb') as f:
+    reader = csv.reader(f)
+    for row in reader:
+    	if row[0] == 'board':
+    		for i in range(int(row[8])): # take account of the quantities
+    			board_cards.append(row[1])
+    	elif row[0] == 'constant':
+    		board_constants.append(row[1])
+    	if row[0] != 'skip':
+    		card_list[row[1]] = [row[2], row[3], row[4], row[5], row[6], row[7]] # [row[x] for x in range(1, 7)] ?
+    		cardName.append(row[1].replace(" ",""))
+    		# row[1] = gameCard(row[1], row[2], row[3], row[4], row[5], row[6], row[7]) didn't appear to be working properly
+    		# print row[1]
+
+# at the moment it is: name: [ 0,cost, 1,runes, 2,power, 3,honor, 4,faction, 5,type] need a space for special details
+
+# need a print value for cards to make information clearer [Apprentice // 1 Rune // 0 Honour] [ MONSTER: Name // x Power // y Honour // z Special Effects]
+# also need to identify the board cards - monster / construct / hero
+
+
+
+
+
+
+
+
+
 
 
 def handInstructions():
@@ -201,7 +221,7 @@ class player(deck):
 					power += addPower
 
 		if len(self.hand) == 0:
-			print "No cards left to play"
+			print "No cards left to play."
 		print "---Ending Turn---"
 
 
