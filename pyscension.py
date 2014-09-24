@@ -48,26 +48,11 @@ def displayCard(cardName, board = False):
 		else:
 			cost += " R    "
 
-		strReturn = "%s: %s [%s%s%s] %s " % (strType, cost, runes, power, honor, displayCard(cardName))
+		strReturn = "%s - %s [%s%s%s] %s " % (strType, cost, runes, power, honor, displayCard(cardName))
 	else:
 		strReturn = "[%s: %s%s%s]" % (cardName, runes, power, honor)
 
 	return strReturn
-
-class gameCard(object):
-	"""game cards"""
-	def __init__(self, name, cost, runes, power, honor, faction, ctype):
-		self.name = name
-		self.cost = cost
-		self.runes = runes
-		self.power = power
-		self.honor = honor
-		self.faction = faction
-		self.type = ctype
-
-	def display(self, board = False):
-		# relpace this with a refactored version, but for now...
-		displayCard(self.name, board)
 
 # this generation could be made clearer by first assigning the rows to variables ie name = row[0], x.append(name)
 # each card should really be an instance of a card class
@@ -81,6 +66,10 @@ with open('CotG.csv', 'rb') as f:
     		board_constants.append(row[1])
     	if row[0] != 'skip':
     		card_list[row[1]] = [row[2], row[3], row[4], row[5], row[6], row[7]] # [row[x] for x in range(1, 7)] ?
+
+    		# row[1] = cardName
+    		# card_list[cardName] = {'cost':row[2], 'runes':row[3], 'power':row[4], 'honor':row[5], 'faction':row[6], 'type':row[7]}
+
     		cardName.append(row[1].replace(" ",""))
     		# row[1] = gameCard(row[1], row[2], row[3], row[4], row[5], row[6], row[7]) didn't appear to be working properly
     		# print row[1]
@@ -89,16 +78,8 @@ with open('CotG.csv', 'rb') as f:
 
 # need a print value for cards to make information clearer [Apprentice // 1 Rune // 0 Honour] [ MONSTER: Name // x Power // y Honour // z Special Effects]
 # also need to identify the board cards - monster / construct / hero
-
-
-
-
-
-
-
-
-
-
+boardSymbols = ['q','w','e','r','t','y']
+badMethod = {'q':0, 'w':1,'e':3,'r':4,'t':5,'y':6}
 
 def handInstructions():
 	"""tells the player what to do"""
@@ -107,21 +88,21 @@ def handInstructions():
 
 class deck(object):
 	"""This is a base used for player decks and the game 'deck'"""
-	def __init__(self, name):
-		self.name = name
-		self.deck = []
-		self.hand = []
-		self.constants = []
-		self.discard = []
-		self.honor = 0
+	def __init__(plyr, name):
+		plyr.name = name
+		plyr.deck = []
+		plyr.hand = []
+		plyr.constants = []
+		plyr.discard = []
+		plyr.honor = 0
 
-	def drawCard(self):
+	def drawCard(plyr):
 		# do i need to account for the incredibly unlikely event of discard and deck having no cards in them?
-		if len(self.deck) == 0:
-			self.deck = list(self.discard)
-			self.discard = []
-			shuffle(self.deck)
-		self.hand.append(self.deck.pop()) # assume this pops the 0'th indexed item by default but have to check
+		if len(plyr.deck) == 0:
+			plyr.deck = list(plyr.discard)
+			plyr.discard = []
+			shuffle(plyr.deck)
+		plyr.hand.append(plyr.deck.pop()) # assume this pops the 0'th indexed item by default but have to check
 
 class board(deck):
 	"""board state
@@ -150,7 +131,7 @@ class board(deck):
 		#print "Constants: \n [MONSTER: Cultist - 2P - 1h]  // [Mystic - 2R - 1h] // [Heavy Infantry - 2P - 1h]"
 		print "Board:"
 		for i in range(6):
-			print "\t" + displayCard(self.hand[i], True)
+			print "\t" + boardSymbols[i] + ": " + displayCard(self.hand[i], True)
 			#print "\t", card_list[self.hand[i]][5].upper(), ":", self.hand[i]
 		print "-" * 10
 
@@ -188,39 +169,61 @@ class player(deck):
 		for x in range(len(self.hand)):
 			print x,":", self.hand[x] # intention is for hand to be interacted with via numbers whilst the board/game is via letters (iterate over a list ['q','w','e', etc])
 
+def acquireCard(plyr, dck, cardName):
+	"""buy cards"""
+	plyr.discard.append(cardName)
+	dck.hand.remove(cardName)
+	print "You bought %s" % cardName
+	dck.drawCard()
 
-	def playHand(self):
-		# this will need simplifying so that it just forms part of a whole related to a game tuen
-		# runes / power perhaps becoming part of the self that are then cleared at the end of the turn to facilitate this
+def playHand(plyr, dck):
+
 		handInstructions()
 		cardSel = ""
+		# reset maybe not needed
 		runes = 0
 		power = 0
-		while len(self.hand) != 0:
+
+		while len(plyr.hand) != 0:
 			print "~" * 10
-			self.displayHand()
+			plyr.displayHand()
 			print "runes: %s // power: %s" % (runes, power)
+
 			cardSel = raw_input(":")
+
 			if cardSel.upper() == "END":
 				break
-			if not cardSel.isdigit():
+
+			if cardSel in boardSymbols:
+				cardName = dck.hand[badMethod[cardSel]]
+				acquireCard(plyr, dck, cardName)
+				dck.displayBoard()
+				
+
+
+
+
+
+
+			elif not cardSel.isdigit():
 				print "~" * 10
 				print "You must enter a number:"
+
 			else:
 				cardIndex = int(cardSel)
-				if cardIndex > len(self.hand) - 1 or cardIndex < 0:
+				if cardIndex > len(plyr.hand) - 1 or cardIndex < 0:
 					print "~" * 10
 					print "Invalid Entry. Try Again"
 				else:
-					addRunes = int(card_list[self.hand[cardIndex]][1])
-					addPower = int(card_list[self.hand[cardIndex]][2])
+					addRunes = int(card_list[plyr.hand[cardIndex]][1])
+					addPower = int(card_list[plyr.hand[cardIndex]][2])
 					print "~" * 10
-					print "Played %s gaining %s runes and %s power." % (self.hand[cardIndex], addRunes, addPower)
-					self.discard.append(self.hand.pop(cardIndex))
+					print "Played %s gaining %s runes and %s power." % (plyr.hand[cardIndex], addRunes, addPower)
+					plyr.discard.append(plyr.hand.pop(cardIndex))
 					runes += addRunes 
 					power += addPower
 
-		if len(self.hand) == 0:
+		if len(plyr.hand) == 0:
 			print "No cards left to play."
 		print "---Ending Turn---"
 
