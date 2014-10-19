@@ -1,5 +1,3 @@
-# need to do cards
-# cardname : cost : type : resource generated : special tag
 # potential issue - having zero cards in deck via banishing - trying to draw a new card etc
 
 from random import shuffle
@@ -27,7 +25,7 @@ with open('CotG.csv', 'rb') as f:
     		board_constants.append(row[1])
     	if row[0] != 'skip':
     		cardName = row[1]
-    		card_list[cardName] = {'cost':row[2], 'runes':row[3], 'power':row[4], 'honor':row[5], 'faction':row[6], 'type':row[7]}
+    		card_list[cardName] = {'cost':int(row[2]), 'runes':int(row[3]), 'power':int(row[4]), 'honor':int(row[5]), 'faction':row[6], 'type':row[7]}
 
 def handInstructions():
 	"""tells the player what to do"""
@@ -39,24 +37,29 @@ def displayCard(cardName, location = 'hand'): # this should not be a boolean but
 	line summary of it - NEEDS REFACTORING
 	IF MONSTER - power and honor come last, cost needs to be somewhere for board"""
 
+	# need to deal with the int change to the card list above as cannot concatenate ints
+	# convert to string or do this in a better way
+	# again have cheated and done this awfully to just get something to work by using the str() to convert the integers
+	# fix this when refactoring to make it cleaner
+
 	if int(card_list[cardName]['runes']) > 0:
-		runes = card_list[cardName]['runes'] + "R"
+		runes = str(card_list[cardName]['runes']) + "R"
 	else:
 		runes = ""
 
 	if int(card_list[cardName]['power']) > 0:
-		power = " / " if len(runes) > 0 else "" + card_list[cardName]['power'] + "P"
+		power = " / " if len(runes) > 0 else "" + str(card_list[cardName]['power']) + "P"
 	else:
 		power = ""
 
 	if int(card_list[cardName]['honor']) > 0:
 		honor = " // " if not board else ""
-		honor += card_list[cardName]['honor'] + "h" # will need adjusting when stats are added in
+		honor += str(card_list[cardName]['honor']) + "h" # will need adjusting when stats are added in
 	else:
 		honor = ""
 
 	if location == 'board':
-		cost = card_list[cardName]['cost']
+		cost = str(card_list[cardName]['cost'])
 		strType = card_list[cardName]['type'].upper() + " " * (9 - len(card_list[cardName]['type']))
 
 		if card_list[cardName]['type'].upper() == 'MONSTER':
@@ -114,12 +117,13 @@ class board(deck):
 			self.constants.append(card)
 
 	def newHand(self):
-		for i in range(6):	# any value to a global variable for cards in hand?
+		for i in range(6):	# any value to a global variable for cards in hand? adds flexibility i guess
 			self.drawCard()
 
 	def displayBoard(self):
 		print "=" * 10
-		print "Constants: \n %s // %s // %s" % (boardConstants[0] + ": " + displayCard("Cultist", "constants"), boardConstants[1] + ": " + displayCard("Mystic", "constants"), boardConstants[2] + ": " + displayCard("Heavy Infantry", "constants"))
+		print ("Constants: \n %s // %s // %s" % (boardConstants[0] + ": " + displayCard("Cultist", "constants"), boardConstants[1] + 
+			": " + displayCard("Mystic", "constants"), boardConstants[2] + ": " + displayCard("Heavy Infantry", "constants")))
 		#print "Constants: \n [MONSTER: Cultist - 2P - 1h]  // [Mystic - 2R - 1h] // [Heavy Infantry - 2P - 1h]"
 		print "Board:"
 		for i in range(6):
@@ -163,19 +167,23 @@ class player(deck):
 		for x in range(len(self.hand)):
 			print x + 1,":", displayCard(self.hand[x], 'hand')
 			# old method:
-			# print x,":", self.hand[x] # intention is for hand to be interacted with via numbers whilst the board/game is via letters (iterate over a list ['q','w','e', etc])
+			# print x,":", self.hand[x] # intention is for hand to be interacted with via numbers whilst the board is via letters (iterate over a list ['q','w','e', etc])
 
 
 
 def acquireCard(plyr, dck, cardName):
 	"""buy cards"""
 	# foo = 'defeated' if card_list[cardName]['type'].upper() == 'MONSTER' else 'purchased'
+	# looks strange but the cost for each type is what is needed to defeat or acquire it
+	# the 'runes' and 'power' of that card in the card list are used when the card is played
+
 	if card_list[cardName]['type'].upper() == 'MONSTER':
-		if plyr.power < card_list[cardName]['power']:
+
+		if plyr.power < card_list[cardName]['cost']:
 			print "+" * 10
 			print "You do not have enough power to defeat %s." % cardName
 		else:
-			plyr.power -= card_list[cardName]['power']
+			plyr.power -= card_list[cardName]['cost']
 			plyr.discard.append(cardName)
 			dck.hand.remove(cardName)
 			dck.drawCard()
@@ -184,10 +192,11 @@ def acquireCard(plyr, dck, cardName):
 			print '~' * 10
 			print "You %s %s" % (foo, cardName)
 	else:
-		if plyr.runes < card_list[cardName]['runes']:
+		if plyr.runes < card_list[cardName]['cost']:
 			print "+" * 10
 			print "You do not have enough runes to purchase %s." % cardName
 		else:
+			plyr.runes -= card_list[cardName]['cost']
 			plyr.discard.append(cardName)
 			dck.hand.remove(cardName)
 			dck.drawCard()
@@ -201,12 +210,13 @@ def playHand(plyr, dck):
 
 		handInstructions()
 		cardSel = ""
-		plyr.runes = 0
-		plyr.power = 0
+		plyr.runes = 100
+		plyr.power = 100
 
 		#while len(plyr.hand) != 0:
 		while cardSel.upper() != 'END':
 			print "~" * 10
+			dck.displayBoard()
 			plyr.displayHand()
 			print "runes: %s // power: %s" % (plyr.runes, plyr.power)
 
@@ -241,6 +251,7 @@ def playHand(plyr, dck):
 				print "Invalid Entry. Try Again"
 
 		print "---Ending Turn---"
+		print "Honor: %s" % plyr.honor
 
 
 # could simplify the game by rather than having to play cards simply calculates the current resources of the player
