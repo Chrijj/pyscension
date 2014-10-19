@@ -184,7 +184,11 @@ def acquireCard(plyr, dck, cardName):
 			print "You do not have enough power to defeat %s." % cardName
 		else:
 			plyr.power -= card_list[cardName]['cost']
-			plyr.discard.append(cardName)
+			# gaining things from defeating the monster
+			plyr.honor += card_list[cardName]['honor']
+			plyr.power += card_list[cardName]['power']
+			plyr.runes += card_list[cardName]['runes']
+
 			dck.hand.remove(cardName)
 			dck.drawCard()
 
