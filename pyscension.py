@@ -13,7 +13,10 @@ board_constants = []
 boardSymbols = ['q','w','e','r','t','y']
 boardConstants = ['i','o','p'] # this should be replaced by something better and renamed
 badMethod = {'q':0, 'w':1, 'e':2, 'r':3, 't':4, 'y':5} # note the variable name
+badMethodBoard = {'i':"Cultist", 'o':"Mystic", 'p':"Heavy Infantry"} # see the variable name
 
+
+# open up the file and generate a reference variable for card data
 # this generation could be made clearer by first assigning the rows to variables ie name = row[0], x.append(name)
 with open('CotG.csv', 'rb') as f:
     reader = csv.reader(f)
@@ -124,11 +127,9 @@ class board(deck):
 		print "=" * 10
 		print ("Constants: \n %s // %s // %s" % (boardConstants[0] + ": " + displayCard("Cultist", "constants"), boardConstants[1] + 
 			": " + displayCard("Mystic", "constants"), boardConstants[2] + ": " + displayCard("Heavy Infantry", "constants")))
-		#print "Constants: \n [MONSTER: Cultist - 2P - 1h]  // [Mystic - 2R - 1h] // [Heavy Infantry - 2P - 1h]"
 		print "Board:"
 		for i in range(6):
 			print "\t" + boardSymbols[i] + ": " + displayCard(self.hand[i], 'board')
-			#print "\t", card_list[self.hand[i]][5].upper(), ":", self.hand[i]
 		print "-" * 10
 
 class player(deck):
@@ -172,7 +173,7 @@ class player(deck):
 
 
 def acquireCard(plyr, dck, cardName):
-	"""buy cards"""
+	"""buy cards either with runes or power"""
 	# foo = 'defeated' if card_list[cardName]['type'].upper() == 'MONSTER' else 'purchased'
 	# looks strange but the cost for each type is what is needed to defeat or acquire it
 	# the 'runes' and 'power' of that card in the card list are used when the card is played
@@ -207,8 +208,22 @@ def acquireCard(plyr, dck, cardName):
 			
 			foo = 'purchased'
 			print '~' * 10
-			print "You %s %s" % (foo, cardName)
-	
+			print "You %s %s" % (foo, cardName)	
+
+def acquireConstant(plyr, cardName):
+	# for buying constants
+	# during testing this doesn't check that the player actually has enough resources for the given card
+	# nor does it check that it has even been called with a constant correctly as a parameter
+	if cardName == 'Cultist':
+		plyr.power -= card_list[cardName]['cost']
+		plyr.honor += card_list[cardName]['honor']
+	else:
+		plyr.discard.append(cardName)
+		plyr.runes -= card_list[cardName]['cost']
+
+	print '~' * 10
+	print "acquired %s" % cardName
+
 
 def playHand(plyr, dck):
 
@@ -229,13 +244,14 @@ def playHand(plyr, dck):
 			if cardSel.upper() == "END":
 				break
 
-			if cardSel in boardSymbols:
+			if cardSel in boardConstants:
+				cardName = badMethodBoard[cardSel]
+				acquireConstant(plyr, cardName)
+				
+			elif cardSel in boardSymbols:
 				cardName = dck.hand[badMethod[cardSel]] # note the name of the method
 				acquireCard(plyr, dck, cardName)
-				dck.displayBoard()
 				
-			# these checks for valid input need sorting out, perhaps their own section
-			# or maybe just have a binary split between is digit and otherwise that run the relevant check for the given input type
 			elif cardSel.isdigit():
 				cardIndex = int(cardSel)
 				if cardIndex > len(plyr.hand) or cardIndex <= 0:
@@ -253,11 +269,12 @@ def playHand(plyr, dck):
 			else:
 				print "~" * 10
 				print "Invalid Entry. Try Again"
+				print cardSel
+				print boardConstants
 
 		print "---Ending Turn---"
 		print "Honor: %s" % plyr.honor
 
 
-# could simplify the game by rather than having to play cards simply calculates the current resources of the player
+# could simplify the game by rather than having to play cards from the hand it simply calculates the current resources of the player
 # guess it depends on what you see as part of the game - is the agility part of it or is it the decisions
-# also card draw, constructs etc
