@@ -1,6 +1,7 @@
 # potential issue - having zero cards in deck via banishing - trying to draw a new card etc
 
 from random import shuffle
+from random import randrange
 import csv
 
 # personal note:
@@ -10,15 +11,17 @@ import csv
 card_list = {}
 board_cards = []
 board_constants = []
+
 boardSymbols = ['q','w','e','r','t','y']
 boardConstants = ['i','o','p'] # this should be replaced by something better and renamed
 badMethod = {'q':0, 'w':1, 'e':2, 'r':3, 't':4, 'y':5} # note the variable name
 badMethodBoard = {'i':"Cultist", 'o':"Mystic", 'p':"Heavy Infantry"} # see the variable name
 
 
+# this should be behind a function
+with open('CotG.csv', 'rb') as f:
 # open up the file and generate a reference variable for card data
 # this generation could be made clearer by first assigning the rows to variables ie name = row[0], x.append(name)
-with open('CotG.csv', 'rb') as f:
     reader = csv.reader(f)
     for row in reader:
     	if row[0] == 'board':
@@ -229,8 +232,8 @@ def playHand(plyr, dck):
 
 		handInstructions()
 		cardSel = ""
-		plyr.runes = 100
-		plyr.power = 100
+		plyr.runes = 0
+		plyr.power = 0
 
 		#while len(plyr.hand) != 0:
 		while cardSel.upper() != 'END':
@@ -274,6 +277,81 @@ def playHand(plyr, dck):
 
 		print "---Ending Turn---"
 		print "Honor: %s" % plyr.honor
+		plyr.newHand()
+
+
+def diceRoll(players):
+	'''because everybody loves a bit of recursion'''
+	highRollers = []
+	highRoll = 0
+	for i in range(len(players)):
+		roll = randrange(1, 7)
+		print '%s rolled a %s.' % (players[i], roll)
+
+		if roll > highRoll:
+			highRoll = roll
+			highRollers = []
+			highRollers.append(players[i])
+		elif roll == highRoll:
+			highRollers.append(players[i])
+
+	if len(highRollers) > 1:
+		diceRoll(highRollers)
+	else:
+		return highRollers[0]
+
+
+
+def playGame():
+	"""initializes a new game"""
+	# EAplayer as a holding variable to avoid referenced before assignment errors
+	# need to sort out the player display names now there is a list of player objects instead of names that is used
+	# instead of using 'x' why don't I use the actual player names as the variable name?
+	# need to properly cleanse player name input to avoid repeats
+
+
+	print '\n'
+	print '=' * 40
+	print '+' * 40
+	print '|' * 15 + ' WELCOME TO PYSCENSION'
+	print '~' * 40
+	print '+' * 40
+	print '\n'
+
+	numPlayers = int(raw_input("How many people are playing? "))
+	plyrNames = []
+	for i in range(numPlayers):
+		newPlayer = raw_input("Player %s name: " % str(i + 1))
+		
+		if newPlayer in plyrNames:
+			print 'That name is already in use, please pick a unique  identifier, such as a nickname like shitbox.'
+			newPlayer = raw_input("Player %s name: " % str(i + 1))
+			# this is only rudimentary as my train is pulling into the station. Need it to loop to avoid duplicate entries.
+		plyrNames.append(newPlayer)
+
+	print '^' * 40
+	print '|' * 10 + ' ' + str(numPlayers) + '  players will face off to be crowned PYSCENSION champion!'
+	for i in range(numPlayers):
+		print '>' * 20 + ' ' + plyrNames[i]
+	print '^' * 40
+	print
+	firstPlayer = diceRoll(plyrNames)
+	print '%s will start the game as they rollled highest.' % firstPlayer
+
+	gameBoard = board("GAME BOARD")
+	plyrObjects = []
+	for i in range(len(plyrNames)):
+		x = 'player %s' % i
+		x = player(plyrNames[i])
+		plyrObjects.append(x)
+
+	foo = ""
+
+	while foo.upper() != 'END GAME':
+		for EAplayer in plyrObjects:
+			foo = raw_input(">>>>>>> It is %s's turn. Enter any key to continue or 'END GAME' to exit." % 'INSERT PLAYER NAME')
+			print "*" * 25 + "%s " % 'INSERT PLAYER NAME \n'
+			playHand(EAplayer, gameBoard)
 
 
 # could simplify the game by rather than having to play cards from the hand it simply calculates the current resources of the player
